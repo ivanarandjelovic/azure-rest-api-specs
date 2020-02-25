@@ -637,6 +637,143 @@
           }
         }
       }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/databases/{databaseName}/queryIds/{queryId}/querytext": {
+      "get": {
+        "tags": [
+          "ManagedInstanceQuerytext"
+        ],
+        "description": "Get query text by query id.",
+        "operationId": "ManagedInstanceQuerytext_ListByQueryId",
+        "parameters": [
+          {
+            "$ref": "#/parameters/ResourceGroupParameter"
+          },
+          {
+            "$ref": "#/parameters/ManagedInstanceNameParameter"
+          },
+          {
+            "$ref": "#/parameters/DatabaseNameParameter"
+          },
+          {
+            "name": "queryId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "$ref": "#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "#/parameters/ApiVersionParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved query text.",
+            "schema": {
+              "$ref": "#/definitions/ManagedInstanceQuerytext"
+            }
+          },
+          "default": {
+            "description": "*** Error Responses: ***\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 ResourceNotFound - The requested resource was not found."
+          }
+        },
+        "x-ms-examples": {
+          "Obtain query text": {
+            "$ref": "./examples/ManagedInstanceQuerytextList.json"
+          }
+        }
+      }
+    },
+    "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/topqueries": {
+      "get": {
+        "tags": [
+          "ManagedInstanceTopqueries"
+        ],
+        "description": "Get top resource consuming queries of a managed instance.",
+        "operationId": "ManagedInstanceTopqueries_ListByManagedInstance",
+        "parameters": [
+          {
+            "$ref": "#/parameters/ResourceGroupParameter"
+          },
+          {
+            "$ref": "#/parameters/ManagedInstanceNameParameter"
+          },
+          {
+            "name": "noumberOfQueries",
+            "in": "query",
+            "description": "How many 'top queries' to return. Default is 5.",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "databases",
+            "in": "query",
+            "description": "Comma separated list of databases to be included into search. All DB's are included if this parameter is not specified.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "description": "Name of the metrics to get.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Start time for observed period.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "End time for observed period.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "aggregation",
+            "in": "query",
+            "description": "The aggregation type to use.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "The time step to be used to summarize the metric values.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "$ref": "#/parameters/SubscriptionIdParameter"
+          },
+          {
+            "$ref": "#/parameters/ApiVersionParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved top querties for managed instance.",
+            "schema": {
+              "$ref": "#/definitions/ManagedInstanceTopqueries"
+            }
+          },
+          "default": {
+            "description": "*** Error Responses: ***\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 ResourceNotFound - The requested resource was not found."
+          }
+        },
+        "x-ms-examples": {
+          "Obtain list of instance's top resource consuming queries.": {
+            "$ref": "./examples/ManagedInstanceTopqueriesList.json"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1087,6 +1224,170 @@
         "id": {
           "description": "The target ID for the resource",
           "type": "string"
+        }
+      }
+    },
+    "QuerytextProperties": {
+      "description": "Properties of a query text.",
+      "type": "object",
+      "properties": {
+        "queryText": {
+          "description": "Query text.",
+          "type": "string"
+        }
+      }
+    },
+    "ProxyResource": {
+      "description": "ARM proxy resource.",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Resource"
+        }
+      ],
+      "properties": {}
+    },
+    "ManagedInstanceQuerytext": {
+      "description": "Query text.",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ProxyResource"
+        }
+      ],
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/QuerytextProperties",
+          "description": "Resource properties.",
+          "x-ms-client-flatten": true
+        }
+      }
+    },
+    "TopqueriesProperties": {
+      "description": "Properties of a topquery.",
+      "type": "object",
+      "properties": {
+        "queries": {
+          "description": "List of top resource consuming queries with appropriate metric data",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopqueryProperties"
+          }
+        }
+      }
+    },
+    "TopqueryProperties": {
+      "description": "Properties of a query.",
+      "type": "object",
+      "properties": {
+        "databaseName": {
+          "description": "Database name of the database in which this query was executed.",
+          "type": "string",
+          "readOnly": true
+        },
+        "queryId": {
+          "description": "Unique query id (unique within one database).",
+          "type": "string",
+          "readOnly": true
+        },
+        "startTime": {
+          "description": "The start time for the metric (ISO-8601 format).",
+          "type": "string",
+          "readOnly": true
+        },
+        "endTime": {
+          "description": "The end time for the metric (ISO-8601 format).",
+          "type": "string",
+          "readOnly": true
+        },
+        "aggregationFunction": {
+          "description": "Aggregation function used in results.",
+          "type": "string",
+          "readOnly": true
+        },
+        "intervals": {
+          "description": "List of intervals with appropriate metric data",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopqueryMetricInterval"
+          }
+        }
+      }
+    },
+    "TopqueryMetricInterval": {
+      "description": "Properties of a topquery interval.",
+      "type": "object",
+      "properties": {
+        "intervalStartTime": {
+          "description": "The start time for the metric interval (ISO-8601 format).",
+          "type": "string",
+          "readOnly": true
+        },
+        "intervalType": {
+          "description": "Interval type (length).",
+          "type": "string",
+          "readOnly": true
+        },
+        "executionCount": {
+          "format": "int64",
+          "description": "Execution count of a query in this interval.",
+          "type": "integer",
+          "readOnly": true
+        },
+        "metrics": {
+          "description": "List of metric objects for this interval",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TopqueryMetric"
+          }
+        }
+      }
+    },
+    "TopqueryMetric": {
+      "description": "Properties of a topquery metric in one interval.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name information for the metric.",
+          "type": "string",
+          "readOnly": true
+        },
+        "unit": {
+          "description": "The unit of the metric.",
+          "enum": [
+            "Count",
+            "Bytes",
+            "Seconds",
+            "Percent"
+          ],
+          "type": "string",
+          "readOnly": true,
+          "x-ms-enum": {
+            "name": "UnitType",
+            "modelAsString": true
+          }
+        },
+        "value": {
+          "format": "double",
+          "description": "The value of the metric.",
+          "type": "number",
+          "readOnly": true
+        }
+      }
+    },
+    "ManagedInstanceTopqueries": {
+      "description": "Managed Instance database query.",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ProxyResource"
+        }
+      ],
+      "properties": {
+        "properties": {
+          "$ref": "#/definitions/TopqueriesProperties",
+          "description": "Resource properties.",
+          "x-ms-client-flatten": true
         }
       }
     }
