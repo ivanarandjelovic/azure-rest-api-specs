@@ -10,7 +10,7 @@
   "responses": {
     "200": {
       "body": {
-        "id": 42,
+        "id": "42",
         "type": "Microsoft.Sql/managedInstances/databases/queryIds",
         "properties": {
           "queryText": "select * from DUMMY_TABLE"
